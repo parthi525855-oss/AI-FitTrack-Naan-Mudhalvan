@@ -1,0 +1,28 @@
+ENDPOINT : GET http://localhost:5000/api/auth/profile
+PURPOSE  : Access protected route with the login JWT (STEP 4a)
+AUTH     : Authorization: Bearer <JWT used internally, never stored>
+
+ACTUAL RESULT:
+  HTTP status : 200
+  success     : true
+  message     : "Profile retrieved successfully"
+
+SANITIZED RESPONSE:
+{
+  "success": true,
+  "message": "Profile retrieved successfully",
+  "data": {
+    "user": {
+      "_id": "<hidden, matches registration/login _id>",
+      "id": "<hidden, mirrors _id>",
+      "name": "Auth Evidence User",
+      "email": "auth-evidence-<same timestamp>@example.com",
+      "createdAt": "<timestamp>",
+      "updatedAt": "<timestamp>"
+    }
+  }
+}
+
+VERIFIED:
+  - Returns HTTP 200 with the CORRECT user (email and _id match registration).
+  - Response user keys: _id, id, name, email, createdAt, updatedAt — no password hash.

@@ -1,0 +1,38 @@
+ENDPOINT : POST http://localhost:5000/api/auth/register
+PURPOSE  : Register a temporary test user (STEP 2)
+
+REQUEST BODY (sanitized — password field shown, value never stored):
+{
+  "name": "Auth Evidence User",
+  "email": "auth-evidence-<timestamp>@example.com",
+  "password": "<hidden>"
+}
+
+ACTUAL RESULT:
+  HTTP status : 201
+  success     : true
+  message     : "Registration successful"
+
+SANITIZED RESPONSE (token + ids redacted):
+{
+  "success": true,
+  "message": "Registration successful",
+  "data": {
+    "token": "<JWT hidden — present, length > 20, prefix eyJhbGciOi...>",
+    "tokenType": "Bearer",
+    "user": {
+      "_id": "<hidden>",
+      "id": "<hidden, mirrors _id>",
+      "name": "Auth Evidence User",
+      "email": "auth-evidence-<timestamp>@example.com",
+      "createdAt": "<timestamp>",
+      "updatedAt": "<timestamp>"
+    }
+  }
+}
+
+VERIFIED:
+  - User created successfully (201, not 400/409/500).
+  - Response user keys: _id, id, name, email, createdAt, updatedAt.
+  - Password hash never appears in the response.
+  - Valid JWT generated at registration (string, HS256 shape eyJhbGciOi...).

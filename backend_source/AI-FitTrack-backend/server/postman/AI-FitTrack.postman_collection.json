@@ -1,0 +1,421 @@
+{
+  "info": {
+    "name": "AI FitTrack API",
+    "description": "Phase 4 Postman collection for the AI FitTrack REST API.\n\nRun order: Health → Register → Login (each saves the JWT to {{token}} automatically) → workout requests (Create saves {{workoutId}}) → AI requests.\n\n- Base URL, JWT token and workout ID are collection variables ({{baseUrl}}, {{token}}, {{workoutId}}).\n- AI requests need a valid GEMINI_API_KEY on the server; without one they return documented 502/503 errors (assertions accept those).\n- Automated assertions (pm.test) run in each request's Tests tab; saved example responses show success and error shapes.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api", "type": "string" },
+    { "key": "token", "value": "", "type": "string" },
+    { "key": "workoutId", "value": "", "type": "string" },
+    { "key": "userEmail", "value": "", "type": "string" },
+    { "key": "userPassword", "value": "secret123", "type": "string" },
+    { "key": "userId", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "0. Health",
+      "item": [
+        {
+          "name": "GET /api/health",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "pm.test('status ok', () => pm.expect(pm.response.json().success).to.equal(true));"
+          ] } }],
+          "request": {
+            "method": "GET",
+            "auth": { "type": "noauth" },
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/health", "host": ["{{baseUrl}}"], "path": ["health"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "1. Authentication",
+      "item": [
+        {
+          "name": "POST /api/auth/register",
+          "event": [
+            { "listen": "prerequest", "script": { "type": "text/javascript", "exec": [
+              "pm.collectionVariables.set('userEmail', 'demo' + Date.now() + Math.floor(Math.random() * 1000) + '@example.com');"
+            ] } },
+            { "listen": "test", "script": { "type": "text/javascript", "exec": [
+              "pm.test('Status 201', () => pm.response.to.have.status(201));",
+              "pm.test('success is true', () => pm.expect(pm.response.json().success).to.be.true);",
+              "pm.test('token returned', () => pm.expect(pm.response.json().data.token).to.be.a('string').and.not.empty);",
+              "pm.test('no password hash in response', () => pm.expect(JSON.stringify(pm.response.json())).to.not.include('$2b$'));",
+              "const d = pm.response.json();",
+              "pm.collectionVariables.set('token', d.data.token);",
+              "pm.collectionVariables.set('userId', d.data.user._id);"
+            ] } }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "auth": { "type": "noauth" },
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Demo User\",\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"{{userPassword}}\"\n}", "options": { "raw": { "language": "json" } } },
+            "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"] }
+          },
+          "response": [
+            {
+              "name": "Success 201",
+              "originalRequest": { "method": "POST", "header": [], "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"] } },
+              "status": { "code": 201, "name": "Created" },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Registration successful\",\n  \"data\": {\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"user\": { \"_id\": \"66f1a2b3c4d5e6f7a8b9c0d1\", \"name\": \"Demo User\", \"email\": \"demo1695000000000@example.com\", \"createdAt\": \"2026-09-23T10:00:00.000Z\", \"updatedAt\": \"2026-09-23T10:00:00.000Z\" }\n  }\n}"
+            },
+            {
+              "name": "Error 409 duplicate email",
+              "originalRequest": { "method": "POST", "header": [], "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"] } },
+              "status": { "code": 409, "name": "Conflict" },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": false,\n  \"message\": \"An account with this email already exists\"\n}"
+            },
+            {
+              "name": "Error 400 validation",
+              "originalRequest": { "method": "POST", "header": [], "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"] } },
+              "status": { "code": 400, "name": "Bad Request" },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Validation failed\",\n  \"errors\": [\"Please provide a valid email address\", \"Password must be at least 6 characters\"]\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST /api/auth/login",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('token returned', () => pm.expect(pm.response.json().data.token).to.be.a('string').and.not.empty);",
+            "pm.test('no password hash in response', () => pm.expect(JSON.stringify(pm.response.json())).to.not.include('$2b$'));",
+            "pm.collectionVariables.set('token', pm.response.json().data.token);"
+          ] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "auth": { "type": "noauth" },
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"{{userPassword}}\"\n}", "options": { "raw": { "language": "json" } } },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          },
+          "response": [
+            {
+              "name": "Success 200",
+              "originalRequest": { "method": "POST", "header": [], "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] } },
+              "status": { "code": 200, "name": "OK" },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Login successful\",\n  \"data\": {\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"user\": { \"_id\": \"66f1a2b3c4d5e6f7a8b9c0d1\", \"name\": \"Demo User\", \"email\": \"demo1695000000000@example.com\" }\n  }\n}"
+            },
+            {
+              "name": "Error 401 invalid credentials",
+              "originalRequest": { "method": "POST", "header": [], "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] } },
+              "status": { "code": 401, "name": "Unauthorized" },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Invalid email or password\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET /api/auth/profile",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('email matches the logged-in user', () => pm.expect(pm.response.json().data.user.email).to.eql(pm.collectionVariables.get('userEmail')));",
+            "pm.test('no password hash in response', () => pm.expect(JSON.stringify(pm.response.json())).to.not.include('$2b$'));"
+          ] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/auth/profile", "host": ["{{baseUrl}}"], "path": ["auth", "profile"] }
+          },
+          "response": [
+            {
+              "name": "Success 200",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/auth/profile", "host": ["{{baseUrl}}"], "path": ["auth", "profile"] } },
+              "status": { "code": 200, "name": "OK" },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Profile fetched successfully\",\n  \"data\": { \"user\": { \"_id\": \"66f1a2b3c4d5e6f7a8b9c0d1\", \"name\": \"Demo User\", \"email\": \"demo1695000000000@example.com\", \"createdAt\": \"2026-09-23T10:00:00.000Z\", \"updatedAt\": \"2026-09-23T10:00:00.000Z\" } }\n}"
+            },
+            {
+              "name": "Error 401 missing token",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/auth/profile", "host": ["{{baseUrl}}"], "path": ["auth", "profile"] } },
+              "status": { "code": 401, "name": "Unauthorized" },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Not authorized, token missing\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Workouts",
+      "item": [
+        {
+          "name": "POST /api/workouts",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('Status 201', () => pm.response.to.have.status(201));",
+            "pm.test('owner comes from the JWT, not the body', () => pm.expect(pm.response.json().data.workout.user).to.eql(pm.collectionVariables.get('userId')));",
+            "pm.collectionVariables.set('workoutId', pm.response.json().data.workout._id);"
+          ] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"workoutName\": \"Morning Run\",\n  \"category\": \"Running\",\n  \"duration\": 30,\n  \"caloriesBurned\": 250,\n  \"workoutDate\": \"2026-09-20\",\n  \"user\": \"000000000000000000000000\"\n}", "options": { "raw": { "language": "json" } } },
+            "url": { "raw": "{{baseUrl}}/workouts", "host": ["{{baseUrl}}"], "path": ["workouts"] }
+          },
+          "response": [
+            {
+              "name": "Success 201",
+              "originalRequest": { "method": "POST", "header": [], "url": { "raw": "{{baseUrl}}/workouts", "host": ["{{baseUrl}}"], "path": ["workouts"] } },
+              "status": { "code": 201, "name": "Created" },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Workout created successfully\",\n  \"data\": { \"workout\": { \"_id\": \"66f1b3c4d5e6f7a8b9c0d2e3\", \"user\": \"66f1a2b3c4d5e6f7a8b9c0d1\", \"workoutName\": \"Morning Run\", \"category\": \"Running\", \"duration\": 30, \"caloriesBurned\": 250, \"workoutDate\": \"2026-09-20T00:00:00.000Z\", \"createdAt\": \"2026-09-23T10:05:00.000Z\", \"updatedAt\": \"2026-09-23T10:05:00.000Z\" } }\n}"
+            },
+            {
+              "name": "Error 400 validation",
+              "originalRequest": { "method": "POST", "header": [], "url": { "raw": "{{baseUrl}}/workouts", "host": ["{{baseUrl}}"], "path": ["workouts"] } },
+              "status": { "code": 400, "name": "Bad Request" },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Validation failed\",\n  \"errors\": [\"Duration must be greater than zero\", \"Category is not supported\"]\n}"
+            },
+            {
+              "name": "Error 401 unauthorized",
+              "originalRequest": { "method": "POST", "header": [], "url": { "raw": "{{baseUrl}}/workouts", "host": ["{{baseUrl}}"], "path": ["workouts"] } },
+              "status": { "code": 401, "name": "Unauthorized" },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Not authorized, token missing\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET /api/workouts",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('returns an array of workouts', () => pm.expect(pm.response.json().data.workouts).to.be.an('array'));",
+            "pm.test('every workout belongs to the logged-in user', () => { pm.response.json().data.workouts.forEach(w => pm.expect(w.user).to.eql(pm.collectionVariables.get('userId'))); });"
+          ] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/workouts", "host": ["{{baseUrl}}"], "path": ["workouts"] }
+          },
+          "response": [
+            {
+              "name": "Success 200",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/workouts", "host": ["{{baseUrl}}"], "path": ["workouts"] } },
+              "status": { "code": 200, "name": "OK" },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Workouts fetched successfully\",\n  \"data\": { \"count\": 2, \"workouts\": [ { \"_id\": \"66f1b3c4d5e6f7a8b9c0d2e3\", \"workoutName\": \"Morning Run\", \"category\": \"Running\", \"duration\": 30, \"caloriesBurned\": 250, \"workoutDate\": \"2026-09-20T00:00:00.000Z\" }, { \"_id\": \"66f1b3c4d5e6f7a8b9c0d2e4\", \"workoutName\": \"Push Day\", \"category\": \"Strength Training\", \"duration\": 45, \"caloriesBurned\": 320, \"workoutDate\": \"2026-09-18T00:00:00.000Z\" } ] }\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET /api/workouts/search",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('every match belongs to the logged-in user', () => { pm.response.json().data.workouts.forEach(w => pm.expect(w.user).to.eql(pm.collectionVariables.get('userId'))); });"
+          ] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/workouts/search?name=run&category=Running&date=2026-09-20", "host": ["{{baseUrl}}"], "path": ["workouts", "search"], "query": [
+              { "key": "name", "value": "run", "description": "case-insensitive substring of workoutName" },
+              { "key": "category", "value": "Running", "description": "exact category (optional)" },
+              { "key": "date", "value": "2026-09-20", "description": "calendar day YYYY-MM-DD (optional)" }
+            ] }
+          },
+          "response": [
+            {
+              "name": "Success 200",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/workouts/search", "host": ["{{baseUrl}}"], "path": ["workouts", "search"] } },
+              "status": { "code": 200, "name": "OK" },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Search completed successfully\",\n  \"data\": { \"count\": 1, \"filters\": { \"name\": \"run\", \"category\": \"Running\", \"date\": \"2026-09-20\" }, \"workouts\": [ { \"_id\": \"66f1b3c4d5e6f7a8b9c0d2e3\", \"workoutName\": \"Morning Run\", \"category\": \"Running\", \"duration\": 30, \"caloriesBurned\": 250, \"workoutDate\": \"2026-09-20T00:00:00.000Z\" } ] }\n}"
+            },
+            {
+              "name": "Error 400 bad category",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/workouts/search?category=Whatever", "host": ["{{baseUrl}}"], "path": ["workouts", "search"], "query": [{ "key": "category", "value": "Whatever" }] } },
+              "status": { "code": 400, "name": "Bad Request" },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Validation failed\",\n  \"errors\": [\"Category is not supported\"]\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET /api/workouts/:id",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('returned id matches the requested workout', () => pm.expect(pm.response.json().data.workout._id).to.eql(pm.collectionVariables.get('workoutId')));",
+            "pm.test('workout belongs to the logged-in user', () => pm.expect(pm.response.json().data.workout.user).to.eql(pm.collectionVariables.get('userId')));"
+          ] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/workouts/{{workoutId}}", "host": ["{{baseUrl}}"], "path": ["workouts", "{{workoutId}}"] }
+          },
+          "response": [
+            {
+              "name": "Success 200",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/workouts/{{workoutId}}", "host": ["{{baseUrl}}"], "path": ["workouts", "{{workoutId}}"] } },
+              "status": { "code": 200, "name": "OK" },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Workout fetched successfully\",\n  \"data\": { \"workout\": { \"_id\": \"66f1b3c4d5e6f7a8b9c0d2e3\", \"user\": \"66f1a2b3c4d5e6f7a8b9c0d1\", \"workoutName\": \"Morning Run\", \"category\": \"Running\", \"duration\": 30, \"caloriesBurned\": 250, \"workoutDate\": \"2026-09-20T00:00:00.000Z\", \"createdAt\": \"2026-09-23T10:05:00.000Z\", \"updatedAt\": \"2026-09-23T10:05:00.000Z\" } }\n}"
+            },
+            {
+              "name": "Error 400 invalid id",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/workouts/not-an-object-id", "host": ["{{baseUrl}}"], "path": ["workouts", "not-an-object-id"] } },
+              "status": { "code": 400, "name": "Bad Request" },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Invalid workout id\"\n}"
+            },
+            {
+              "name": "Error 404 not found / other user's workout",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/workouts/66f1b3c4d5e6f7a8b9c0d999", "host": ["{{baseUrl}}"], "path": ["workouts", "66f1b3c4d5e6f7a8b9c0d999"] } },
+              "status": { "code": 404, "name": "Not Found" },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Workout not found\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "PUT /api/workouts/:id",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('change persisted', () => pm.expect(pm.response.json().data.workout.duration).to.eql(55));"
+          ] } }],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"duration\": 55,\n  \"caloriesBurned\": 340,\n  \"user\": \"000000000000000000000000\"\n}", "options": { "raw": { "language": "json" } } },
+            "url": { "raw": "{{baseUrl}}/workouts/{{workoutId}}", "host": ["{{baseUrl}}"], "path": ["workouts", "{{workoutId}}"] }
+          },
+          "response": [
+            {
+              "name": "Success 200",
+              "originalRequest": { "method": "PUT", "header": [], "url": { "raw": "{{baseUrl}}/workouts/{{workoutId}}", "host": ["{{baseUrl}}"], "path": ["workouts", "{{workoutId}}"] } },
+              "status": { "code": 200, "name": "OK" },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Workout updated successfully\",\n  \"data\": { \"workout\": { \"_id\": \"66f1b3c4d5e6f7a8b9c0d2e3\", \"user\": \"66f1a2b3c4d5e6f7a8b9c0d1\", \"workoutName\": \"Morning Run\", \"category\": \"Running\", \"duration\": 55, \"caloriesBurned\": 340, \"workoutDate\": \"2026-09-20T00:00:00.000Z\", \"createdAt\": \"2026-09-23T10:05:00.000Z\", \"updatedAt\": \"2026-09-23T10:07:00.000Z\" } }\n}"
+            },
+            {
+              "name": "Error 404 other user's workout",
+              "originalRequest": { "method": "PUT", "header": [], "url": { "raw": "{{baseUrl}}/workouts/66f1b3c4d5e6f7a8b9c0d999", "host": ["{{baseUrl}}"], "path": ["workouts", "66f1b3c4d5e6f7a8b9c0d999"] } },
+              "status": { "code": 404, "name": "Not Found" },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Workout not found\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "DELETE /api/workouts/:id",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('deleted workout removed', () => pm.expect(pm.response.json().data.workout._id).to.eql(pm.collectionVariables.get('workoutId')));"
+          ] } }],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/workouts/{{workoutId}}", "host": ["{{baseUrl}}"], "path": ["workouts", "{{workoutId}}"] }
+          },
+          "response": [
+            {
+              "name": "Success 200",
+              "originalRequest": { "method": "DELETE", "header": [], "url": { "raw": "{{baseUrl}}/workouts/{{workoutId}}", "host": ["{{baseUrl}}"], "path": ["workouts", "{{workoutId}}"] } },
+              "status": { "code": 200, "name": "OK" },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Workout deleted successfully\",\n  \"data\": { \"workout\": { \"_id\": \"66f1b3c4d5e6f7a8b9c0d2e3\", \"workoutName\": \"Morning Run\", \"category\": \"Running\", \"duration\": 55, \"caloriesBurned\": 340, \"workoutDate\": \"2026-09-20T00:00:00.000Z\" } }\n}"
+            },
+            {
+              "name": "Error 404 already deleted",
+              "originalRequest": { "method": "DELETE", "header": [], "url": { "raw": "{{baseUrl}}/workouts/{{workoutId}}", "host": ["{{baseUrl}}"], "path": ["workouts", "{{workoutId}}"] } },
+              "status": { "code": 404, "name": "Not Found" },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Workout not found\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3. AI (Gemini)",
+      "item": [
+        {
+          "name": "POST /api/ai/workout-recommendation",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('recommendation contains a weekly plan', () => pm.expect(pm.response.json().data.recommendation.weeklyPlan).to.be.an('array').that.is.not.empty);",
+            "pm.test('safety guidance present', () => pm.expect(pm.response.json().data.recommendation.safetyGuidance).to.be.a('string').and.not.empty);"
+          ] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"age\": 22,\n  \"fitnessGoal\": \"Weight Loss\",\n  \"experienceLevel\": \"Beginner\"\n}", "options": { "raw": { "language": "json" } } },
+            "url": { "raw": "{{baseUrl}}/ai/workout-recommendation", "host": ["{{baseUrl}}"], "path": ["ai", "workout-recommendation"] }
+          },
+          "response": [
+            {
+              "name": "Success 200",
+              "originalRequest": { "method": "POST", "header": [], "url": { "raw": "{{baseUrl}}/ai/workout-recommendation", "host": ["{{baseUrl}}"], "path": ["ai", "workout-recommendation"] } },
+              "status": { "code": 200, "name": "OK" },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Workout recommendation generated successfully\",\n  \"data\": { \"input\": { \"age\": 22, \"fitnessGoal\": \"Weight Loss\", \"experienceLevel\": \"Beginner\" }, \"model\": \"gemini-3.6-flash\", \"recommendation\": { \"weeklyPlan\": [ { \"day\": \"Monday\", \"focus\": \"Full body\", \"exercises\": [ { \"name\": \"Bodyweight squat\", \"sets\": 3, \"reps\": 12, \"durationMinutes\": null, \"restSeconds\": 60 } ], \"durationMinutes\": 30 } ], \"weeklyOverview\": \"…\", \"exerciseRecommendations\": \"…\", \"trainingTips\": \"…\", \"restAndRecovery\": \"…\", \"safetyGuidance\": \"…\", \"motivation\": \"…\" } }\n}"
+            },
+            {
+              "name": "Error 400 invalid age",
+              "originalRequest": { "method": "POST", "header": [], "url": { "raw": "{{baseUrl}}/ai/workout-recommendation", "host": ["{{baseUrl}}"], "path": ["ai", "workout-recommendation"] } },
+              "status": { "code": 400, "name": "Bad Request" },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Validation failed\",\n  \"errors\": [\"Age must be a whole number between 13 and 100\"]\n}"
+            },
+            {
+              "name": "Error 401 unauthorized",
+              "originalRequest": { "method": "POST", "header": [], "url": { "raw": "{{baseUrl}}/ai/workout-recommendation", "host": ["{{baseUrl}}"], "path": ["ai", "workout-recommendation"] } },
+              "status": { "code": 401, "name": "Unauthorized" },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Not authorized, token missing\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST /api/ai/fitness-insights",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('stats source labelled', () => pm.expect(['database', 'client-submitted']).to.include(pm.response.json().data.statsSource));",
+            "pm.test('zero-workout or insights present', () => { const d = pm.response.json().data; if (d.stats.totalWorkouts > 0) { pm.expect(d.insights).to.be.an('object'); } else { pm.expect(d.message).to.match(/no workouts/i); } });"
+          ] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"useDatabaseStats\": true\n}", "options": { "raw": { "language": "json" } } },
+            "url": { "raw": "{{baseUrl}}/ai/fitness-insights", "host": ["{{baseUrl}}"], "path": ["ai", "fitness-insights"] }
+          },
+          "response": [
+            {
+              "name": "Success 200 (database stats)",
+              "originalRequest": { "method": "POST", "header": [], "url": { "raw": "{{baseUrl}}/ai/fitness-insights", "host": ["{{baseUrl}}"], "path": ["ai", "fitness-insights"] } },
+              "status": { "code": 200, "name": "OK" },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Fitness insights generated successfully\",\n  \"data\": { \"statsSource\": \"database\", \"stats\": { \"totalWorkouts\": 15, \"averageWorkoutDuration\": 45, \"totalCaloriesBurned\": 3200 }, \"insights\": { \"performanceSummary\": \"…\", \"consistencyObservations\": \"…\", \"improvementSuggestions\": \"…\", \"motivation\": \"…\", \"overallProgress\": \"…\" } }\n}"
+            },
+            {
+              "name": "Success 200 (client-submitted stats)",
+              "originalRequest": { "method": "POST", "header": [], "url": { "raw": "{{baseUrl}}/ai/fitness-insights", "host": ["{{baseUrl}}"], "path": ["ai", "fitness-insights"] } },
+              "status": { "code": 200, "name": "OK" },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Fitness insights generated successfully\",\n  \"data\": { \"statsSource\": \"client-submitted\", \"stats\": { \"totalWorkouts\": 15, \"averageWorkoutDuration\": 45, \"totalCaloriesBurned\": 3200 }, \"insights\": { \"performanceSummary\": \"…\", \"consistencyObservations\": \"…\", \"improvementSuggestions\": \"…\", \"motivation\": \"…\", \"overallProgress\": \"…\" } }\n}"
+            },
+            {
+              "name": "Error 400 invalid statistics",
+              "originalRequest": { "method": "POST", "header": [], "url": { "raw": "{{baseUrl}}/ai/fitness-insights", "host": ["{{baseUrl}}"], "path": ["ai", "fitness-insights"] } },
+              "status": { "code": 400, "name": "Bad Request" },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Validation failed\",\n  \"errors\": [\"totalWorkouts must be zero or greater\"]\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

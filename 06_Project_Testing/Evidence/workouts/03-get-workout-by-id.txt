@@ -1,0 +1,29 @@
+ENDPOINT : GET http://localhost:5000/api/workouts/<workoutId>
+PURPOSE  : Retrieve the created workout by its ID
+AUTH     : Authorization: Bearer <JWT used internally, never stored>
+
+ACTUAL RESULT:
+  HTTP status : 200
+  success     : true
+  message     : "Workout retrieved successfully"
+
+SANITIZED RESPONSE:
+{
+  "success": true,
+  "message": "Workout retrieved successfully",
+  "data": {
+    "workout": {
+      "_id": "<hidden>",
+      "user": "<hidden, authenticated user>",
+      "workoutName": "Evidence Morning Run",
+      "category": "Running",
+      "duration": 30,
+      "caloriesBurned": 280,
+      "workoutDate": "2026-09-20T00:00:00.000Z",
+      "createdAt": "<timestamp>",
+      "updatedAt": "<timestamp>"
+    }
+  }
+}
+
+VERIFIED: correct record returned for the owned ID (workoutName matches creation).

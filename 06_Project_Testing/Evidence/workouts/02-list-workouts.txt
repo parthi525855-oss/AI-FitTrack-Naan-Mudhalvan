@@ -1,0 +1,32 @@
+ENDPOINT : GET http://localhost:5000/api/workouts
+PURPOSE  : Retrieve all workouts of the authenticated temp user
+AUTH     : Authorization: Bearer <JWT used internally, never stored>
+
+ACTUAL RESULT:
+  HTTP status : 200
+  success     : true
+  message     : "Workouts retrieved successfully"
+
+SANITIZED RESPONSE:
+{
+  "success": true,
+  "message": "Workouts retrieved successfully",
+  "data": {
+    "count": 1,
+    "workouts": [
+      {
+        "_id": "<hidden>",
+        "user": "<hidden, authenticated user>",
+        "workoutName": "Evidence Morning Run",
+        "category": "Running",
+        "duration": 30,
+        "caloriesBurned": 280,
+        "workoutDate": "2026-09-20T00:00:00.000Z",
+        "createdAt": "<timestamp>",
+        "updatedAt": "<timestamp>"
+      }
+    ]
+  }
+}
+
+VERIFIED: count=1 — exactly the record created in 01; list is scoped to the JWT user.

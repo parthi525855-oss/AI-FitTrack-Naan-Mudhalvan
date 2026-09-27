@@ -1,0 +1,33 @@
+ENDPOINT : GET http://localhost:5000/api/workouts/search?date=2026-09-20
+PURPOSE  : Search own workouts by calendar date (UTC day boundaries)
+AUTH     : Authorization: Bearer <JWT used internally, never stored>
+
+ACTUAL RESULT:
+  HTTP status : 200
+  success     : true
+  message     : "Workout search completed"
+
+SANITIZED RESPONSE:
+{
+  "success": true,
+  "message": "Workout search completed",
+  "data": {
+    "count": 1,
+    "filters": { "date": "2026-09-20" },
+    "workouts": [
+      {
+        "_id": "<hidden>",
+        "user": "<hidden, authenticated user>",
+        "workoutName": "Evidence Morning Run",
+        "category": "Running",
+        "duration": 45,
+        "caloriesBurned": 400,
+        "workoutDate": "2026-09-20T00:00:00.000Z",
+        "createdAt": "<timestamp>",
+        "updatedAt": "<timestamp>"
+      }
+    ]
+  }
+}
+
+VERIFIED: count=1 — calendar-day match on the owned record's workoutDate.
