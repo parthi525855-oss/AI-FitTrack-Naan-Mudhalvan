@@ -9,15 +9,5 @@
       "sha256": "ee120f7fb965d423296687e3c0c528e828e44adce5dd28f39a0e5ebcb5c3a27d"
     }
   },
-  "documentation": [
-    "Phase Wise Documentation/01_Brainstorming_and_Ideation/Phase_01_Brainstorming_and_Ideation.docx",
-    "Phase Wise Documentation/02_Requirement_Analysis/Phase_02_Requirement_Analysis.docx",
-    "Phase Wise Documentation/03_Project_Design/Phase_03_Project_Design.docx",
-    "Phase Wise Documentation/04_Project_Planning/Phase_04_Project_Planning.docx",
-    "Phase Wise Documentation/05_Project_Development/Phase_05_Project_Development.docx",
-    "Phase Wise Documentation/06_Project_Testing/Phase_06_Project_Testing.docx",
-    "Phase Wise Documentation/07_Project_Documentation/Phase_07_Final_Project_Report.docx",
-    "Phase Wise Documentation/08_Project_Demonstration/Phase_08_Project_Demonstration_Guide.docx"
-  ],
   "privacy": "No private .env or credentials included"
 }

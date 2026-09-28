@@ -2,23 +2,18 @@
 
 **AI FitTrack** is a backend-only REST API built with Node.js, Express.js, MongoDB Atlas, Mongoose, JWT authentication, bcrypt password hashing, and Google Gemini AI integration. The platform provides authenticated users with end-to-end workout logging, statistical tracking, and personalized AI-generated fitness recommendations and workout plans.
 
-This repository preserves the complete, unaltered backend source code and organizes all official project documentation across the eight required SmartBridge phases.
+This repository preserves the complete, unaltered backend source code together with the final project documentation.
 
 ---
 
-## Repository Structure & Phase Deliverables
+## Repository Structure
 
-| Phase / Folder | Documentation Deliverables | Description |
-|---|---|---|
-| [**01_Brainstorming_and_Ideation**](./Phase%20Wise%20Documentation/01_Brainstorming_and_Ideation/) | [DOCX](./Phase%20Wise%20Documentation/01_Brainstorming_and_Ideation/Phase_01_Brainstorming_and_Ideation.docx) \| [PDF](./Phase%20Wise%20Documentation/01_Brainstorming_and_Ideation/Phase_01_Brainstorming_and_Ideation.pdf) | Problem definition, concept selection, scope boundaries, and solution architecture |
-| [**02_Requirement_Analysis**](./Phase%20Wise%20Documentation/02_Requirement_Analysis/) | [DOCX](./Phase%20Wise%20Documentation/02_Requirement_Analysis/Phase_02_Requirement_Analysis.docx) \| [PDF](./Phase%20Wise%20Documentation/02_Requirement_Analysis/Phase_02_Requirement_Analysis.pdf) \| [Reference DOCX](./Phase%20Wise%20Documentation/02_Requirement_Analysis/Reference/Official_AI_FitTrack_Requirements.docx) | Functional/non-functional requirements mapping and official SmartBridge requirement reference |
-| [**03_Project_Design**](./Phase%20Wise%20Documentation/03_Project_Design/) | [DOCX](./Phase%20Wise%20Documentation/03_Project_Design/Phase_03_Project_Design.docx) \| [PDF](./Phase%20Wise%20Documentation/03_Project_Design/Phase_03_Project_Design.pdf) | System architecture, MongoDB schemas, JWT security flows, API specifications, and error handling |
-| [**04_Project_Planning**](./Phase%20Wise%20Documentation/04_Project_Planning/) | [DOCX](./Phase%20Wise%20Documentation/04_Project_Planning/Phase_04_Project_Planning.docx) \| [PDF](./Phase%20Wise%20Documentation/04_Project_Planning/Phase_04_Project_Planning.pdf) | Evidence-based milestone gates, work breakdown structure, risk management, and team roles |
-| [**05_Project_Development**](./Phase%20Wise%20Documentation/05_Project_Development/) | [DOCX](./Phase%20Wise%20Documentation/05_Project_Development/Phase_05_Project_Development.docx) \| [PDF](./Phase%20Wise%20Documentation/05_Project_Development/Phase_05_Project_Development.pdf) | Source implementation walkthrough, module structure, routing, services, and middleware |
-| [**06_Project_Testing**](./Phase%20Wise%20Documentation/06_Project_Testing/) | [DOCX](./Phase%20Wise%20Documentation/06_Project_Testing/Phase_06_Project_Testing.docx) \| [PDF](./Phase%20Wise%20Documentation/06_Project_Testing/Phase_06_Project_Testing.pdf) \| [Evidence Logs](./Phase%20Wise%20Documentation/06_Project_Testing/Evidence/) | Test strategy, test suites breakdown, and verified execution logs |
-| [**07_Project_Documentation**](./Phase%20Wise%20Documentation/07_Project_Documentation/) | [DOCX](./Phase%20Wise%20Documentation/07_Project_Documentation/Phase_07_Final_Project_Report.docx) \| [PDF](./Phase%20Wise%20Documentation/07_Project_Documentation/Phase_07_Final_Project_Report.pdf) \| [Root Copy](./AI_FitTrack_Final_Documentation.docx) | Complete final project report covering all project lifecycle phases |
-| [**08_Project_Demonstration**](./Phase%20Wise%20Documentation/08_Project_Demonstration/) | [DOCX](./Phase%20Wise%20Documentation/08_Project_Demonstration/Phase_08_Project_Demonstration_Guide.docx) \| [PDF](./Phase%20Wise%20Documentation/08_Project_Demonstration/Phase_08_Project_Demonstration_Guide.pdf) | Demonstration guide, step-by-step video script, API walkthrough, and submission checklist |
-| [**backend_source**](./backend_source/AI-FitTrack-backend/) | [Backend Source README](./backend_source/AI-FitTrack-backend/README.md) \| [server/](./backend_source/AI-FitTrack-backend/server/) | Original, unaltered production-ready Node.js/Express REST API source code |
+| Folder / File | Description |
+|---|---|
+| [**backend_source/AI-FitTrack-backend/**](./backend_source/AI-FitTrack-backend/) | Original, unaltered production-ready Node.js/Express REST API source code ([Backend Source README](./backend_source/AI-FitTrack-backend/README.md), [server/](./backend_source/AI-FitTrack-backend/server/)) |
+| [**AI_FitTrack_Final_Documentation.docx**](./AI_FitTrack_Final_Documentation.docx) | Complete final project report covering all project lifecycle phases |
+| [**SOURCE_MANIFEST.json**](./SOURCE_MANIFEST.json) | Source manifest with input SHA-256 hashes |
+| [**SUBMISSION_CHECKLIST.md**](./SUBMISSION_CHECKLIST.md) | Pre-submission verification checklist |
 
 ---
 
@@ -35,7 +30,6 @@ This repository preserves the complete, unaltered backend source code and organi
 
 - **Public Google Drive Demo Video:** `[INSERT_PUBLIC_GOOGLE_DRIVE_VIDEO_LINK_HERE]`
 
-*(Refer to [Phase 08 Demonstration Guide](./Phase%20Wise%20Documentation/08_Project_Demonstration/Phase_08_Project_Demonstration_Guide.docx) for the video recording structure and voice-over script.)*
 
 ---
 
@@ -158,14 +152,14 @@ Expected response:
 
 ## Testing Summary (Verified Evidence)
 
-All verification metrics are backed by execution records in the [`Phase Wise Documentation/06_Project_Testing/Evidence/`](./Phase%20Wise%20Documentation/06_Project_Testing/Evidence/) directory:
+All verification metrics are backed by execution records captured during testing:
 
 | Test Category | Target / Scope | Result | Evidence File |
 |---|---|---|---|
-| **Automated Unit & Integration Tests** | Auth, Workouts, AI, Security, Validation, Gemini Retry (`node:test` + Supertest) | **95 passed, 0 failed** (11 test suites) | [`Phase Wise Documentation/06_Project_Testing/Phase_06_Project_Testing.pdf`](./Phase%20Wise%20Documentation/06_Project_Testing/Phase_06_Project_Testing.pdf) |
+| **Automated Unit & Integration Tests** | Auth, Workouts, AI, Security, Validation, Gemini Retry (`node:test` + Supertest) | **95 passed, 0 failed** (11 test suites) | Phase 06 Project Testing report |
 | **End-to-End Smoke Checks** | Route health, authentication cycle, workout CRUD, search filters, AI plan fallback | **17 passed, 0 failed** (17/17 checks) | [`backend_source/AI-FitTrack-backend/server/tests/smoke/e2e-smoke.js`](./backend_source/AI-FitTrack-backend/server/tests/smoke/e2e-smoke.js) |
 | **MongoDB Atlas Live Integration** | Direct cloud cluster connectivity, index validation, write/read isolation | **19 passed, 0 failed** (19/19 checks) | [`backend_source/AI-FitTrack-backend/server/tests/smoke/atlas-check.js`](./backend_source/AI-FitTrack-backend/server/tests/smoke/atlas-check.js) |
-| **Live API Evidence Records** | Registration, Login, Profile (Auth/Unauth), Workouts CRUD + Search, Gemini Recommendations & Insights | **15 sanitized transaction logs** | [`Phase Wise Documentation/06_Project_Testing/Evidence/`](./Phase%20Wise%20Documentation/06_Project_Testing/Evidence/) |
+| **Live API Evidence Records** | Registration, Login, Profile (Auth/Unauth), Workouts CRUD + Search, Gemini Recommendations & Insights | **15 sanitized transaction logs** | Captured during live API testing |
 
 ### Running the Test Suites Locally
 To run the automated in-memory test suite (no live MongoDB or Gemini API key required):
