@@ -11,6 +11,9 @@ server/.env.local
 server/.env.*.local
 server/.env.*.example
 !server/.env.example
+# Evaluators requested the working .env be published with the submission
+!server/.env
+!backend_source/AI-FitTrack-backend/server/.env
 
 # logs
 logs/

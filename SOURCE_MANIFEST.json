@@ -9,5 +9,5 @@
       "sha256": "ee120f7fb965d423296687e3c0c528e828e44adce5dd28f39a0e5ebcb5c3a27d"
     }
   },
-  "privacy": "No private .env or credentials included"
+  "privacy": "Backend credentials are provided in backend_source/AI-FitTrack-backend/server/.env for evaluator use"
 }

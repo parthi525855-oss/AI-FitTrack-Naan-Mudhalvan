@@ -12,5 +12,5 @@ Complete these items before uploading to SmartBridge or Naan Mudhalvan:
 - [ ] Capture Postman, terminal test and MongoDB Atlas screenshots if the portal expects visual evidence.
 - [ ] Record the demonstration using Phase 8 and add a shareable video URL.
 - [ ] Add a deployed API URL only if hosting is required.
-- [ ] Verify that `.env`, API keys, JWT secrets, passwords, tokens and MongoDB credentials are absent from Git history and all screenshots.
+- [ ] Confirm the published `.env` contains only the intended evaluation credentials, and that no additional API keys, JWT secrets, passwords or tokens appear in screenshots.
 - [ ] Test every submitted link in a signed-out browser window.

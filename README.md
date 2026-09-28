@@ -73,6 +73,7 @@ backend_source/AI-FitTrack-backend/
 │   ├── utils/                           # Validation schemas and response envelopes
 │   ├── tests/                           # Complete test suite (95 tests)
 │   ├── postman/                         # Exported Postman collection
+│   ├── .env                     # Environment configuration (included for evaluation)
 │   ├── .env.example                     # Environment template (no secrets)
 │   ├── app.js                           # Express application configuration
 │   ├── server.js                        # HTTP server bootstrapper
@@ -98,12 +99,12 @@ cd AI-FitTrack-Naan-Mudhalvan
 ```
 
 ### 2. Configure Environment Variables
-Navigate to the server directory and create your `.env` configuration from the provided template:
+A ready-to-use `.env` file is already included at `backend_source/AI-FitTrack-backend/server/.env`. If you need to recreate it from the template instead:
 ```bash
 cd backend_source/AI-FitTrack-backend/server
 cp .env.example .env
 ```
-Open `.env` and fill in your connection details (never commit this file):
+Review the `.env` values and adjust them for your environment if needed:
 ```ini
 PORT=5000
 MONGO_URI=mongodb+srv://<cluster-url>/ai-fittrack?retryWrites=true&w=majority
@@ -172,7 +173,7 @@ npm test
 
 ## Security and Privacy Assurance
 
-- **No Secrets Committed:** This repository contains no private `.env` files, production passwords, active API keys, or JWT tokens.
+- **Environment Configuration:** A ready-to-use `.env` file is included in `backend_source/AI-FitTrack-backend/server/` so evaluators can run the project immediately; no other credentials or tokens are committed.
 - **Password Protection:** Uses `bcryptjs` with 12 salt rounds; passwords have `select: false` on the User model and are never returned in responses.
 - **Strict Data Isolation:** All workout and AI routes require a valid JWT Bearer token; queries enforce ownership via `req.user._id`.
 - **Injection Prevention:** User inputs are strictly validated with custom schemas, and search parameters are sanitized against regex injection.
