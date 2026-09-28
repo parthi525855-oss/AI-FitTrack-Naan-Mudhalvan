@@ -1,0 +1,38 @@
+ENDPOINT : POST http://localhost:5000/api/workouts
+PURPOSE  : Create a workout for the authenticated temp user
+AUTH     : Authorization: Bearer <JWT used internally, never stored>
+
+REQUEST BODY:
+{
+  "workoutName": "Evidence Morning Run",
+  "category": "Running",
+  "duration": 30,
+  "caloriesBurned": 280,
+  "workoutDate": "2026-09-20"
+}
+
+ACTUAL RESULT:
+  HTTP status : 201
+  success     : true
+  message     : "Workout created successfully"
+
+SANITIZED RESPONSE:
+{
+  "success": true,
+  "message": "Workout created successfully",
+  "data": {
+    "workout": {
+      "_id": "<hidden>",
+      "user": "<hidden, equals authenticated user _id — VERIFIED owner match>",
+      "workoutName": "Evidence Morning Run",
+      "category": "Running",
+      "duration": 30,
+      "caloriesBurned": 280,
+      "workoutDate": "2026-09-20T00:00:00.000Z",
+      "createdAt": "<timestamp>",
+      "updatedAt": "<timestamp>"
+    }
+  }
+}
+
+VERIFIED: owner field equals the JWT user's _id — record belongs to the correct user.
