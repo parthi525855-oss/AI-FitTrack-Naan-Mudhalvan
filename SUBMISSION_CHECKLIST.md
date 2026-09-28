@@ -2,15 +2,14 @@
 
 Complete these items before uploading to SmartBridge or Naan Mudhalvan:
 
-- [ ] Add student name, NM ID, roll or register number, department and college.
-- [ ] Add academic year, guide or mentor name and official submission date.
-- [ ] Confirm whether this is an individual or team project; add member names and real responsibilities only if applicable.
+- [x] Add student names, NM IDs, register numbers, department and college (DRBCCC Hindu College, B.Sc. CS with AI, 2024–2027).
+- [x] Add academic year, faculty guide (Prof. D Saraswathy) and official team leader/member details.
+- [x] Confirm team project structure, individual responsibilities across all 4 members.
 - [ ] Publish the final source code and root report document in a public GitHub repository.
 - [ ] Insert the public repository URL into the report and demonstration.
-- [ ] Re-run `npm test`, smoke checks and Atlas checks from the frozen final commit.
-- [ ] Re-capture the delete response and submitted-statistics response so evidence matches the uploaded source exactly.
-- [ ] Capture Postman, terminal test and MongoDB Atlas screenshots if the portal expects visual evidence.
-- [ ] Record the demonstration using Phase 8 and add a shareable video URL.
+- [ ] Re-run `npm test`, smoke checks and Atlas checks from the frozen final commit if required by the evaluator.
+- [ ] Record the demonstration using Phase 8 and add a shareable public video URL.
 - [ ] Add a deployed API URL only if hosting is required.
 - [ ] Confirm the published `.env` contains only the intended evaluation credentials, and that no additional API keys, JWT secrets, passwords or tokens appear in screenshots.
 - [ ] Test every submitted link in a signed-out browser window.
+

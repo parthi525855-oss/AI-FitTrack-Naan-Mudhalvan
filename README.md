@@ -2,7 +2,31 @@
 
 **AI FitTrack** is a backend-only REST API built with Node.js, Express.js, MongoDB Atlas, Mongoose, JWT authentication, bcrypt password hashing, and Google Gemini AI integration. The platform provides authenticated users with end-to-end workout logging, statistical tracking, and personalized AI-generated fitness recommendations and workout plans.
 
-This repository preserves the complete, unaltered backend source code together with the final project documentation.
+This repository preserves the complete, unaltered backend source code together with the complete academic details and final project documentation.
+
+---
+
+## Academic Submission Metadata
+
+| Field | Value |
+|---|---|
+| **Project Name** | AI FitTrack |
+| **Submission Platform** | SmartBridge Naan Mudhalvan |
+| **Team ID** | SWTID-2026-8100 |
+| **Institution / College** | DRBCCC Hindu College |
+| **Department** | B.Sc. Computer Science with Artificial Intelligence |
+| **Academic Year** | 2024–2027 |
+| **Faculty Guide** | Prof. D Saraswathy |
+| **Project Scope** | Backend-only REST API |
+
+### Team Members & Responsibilities
+
+| Name | Role | Naan Mudhalvan ID | Register Number | Confirmed Responsibility |
+|---|---|---|---|---|
+| **Parthiban M** | Team Leader | `28538B1DB05060E8D804CDAA88169909` | `222401226` | Project architecture, complete backend development, MongoDB integration, Gemini AI implementation and final delivery. |
+| **Naveen J** | Team Member | `53C2DC1753C6DFDAF8649841B4630C80` | `222401223` | Reviewing requirements, organizing the eight-phase documentation and checking submission guidelines. |
+| **Nidesh N S** | Team Member | `FDE55A8DA9135F6AB7347C01AD1B8A17` | `222401224` | Reviewing Postman API test results, checking test evidence and helping verify that the APIs meet the requirements. |
+| **Nithish Kumar P** | Team Member | `BFBD9AD8CEC72229F374877DB82CC0B8` | `222401225` | Reviewing the final report, helping prepare the demonstration and organizing GitHub and SkillWallet submission materials. |
 
 ---
 
@@ -184,6 +208,7 @@ npm test
 
 - **Backend Source ZIP SHA-256:** `7431ff0027bcfeda1fa81b19151d3a3ada84b812adb1742b4eb84ed22f630320`
 - **Official Requirements DOCX SHA-256:** `ee120f7fb965d423296687e3c0c528e828e44adce5dd28f39a0e5ebcb5c3a27d`
-- **Phase 07 Final Report DOCX SHA-256:** `776f25b12957eb0e8dda0358ebfafb94e1039a53423b5eefae5b6fa0d2cdfb3c`
+- **Phase 07 Final Report DOCX SHA-256:** `01196d949bab56fb2bd26c5fc7a7242715a827d7656d74bea8591892f4c2d73f`
+- **Root Final Documentation DOCX SHA-256:** `01196d949bab56fb2bd26c5fc7a7242715a827d7656d74bea8591892f4c2d73f`
 
 See [`SUBMISSION_CHECKLIST.md`](./SUBMISSION_CHECKLIST.md) for pre-submission checks.
